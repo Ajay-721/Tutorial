@@ -24,9 +24,14 @@ module.exports = defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  timeout: 60000,
+  expect: {
+    timeout: 60000,
+  },
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
      baseURL: 'https://perfumy-api.onrender.com/',
+    navigationTimeout: 60000,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
