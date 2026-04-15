@@ -50,20 +50,20 @@ async function login(page, email, password) {
 
 // ===== TEST 1 =====
 test('loads app', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('https://perfumy-api.onrender.com/');
   await expect(page.locator('text=Featured Perfumes')).toBeVisible();
 });
 
 // ===== TEST 2 =====
 test('login works', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('https://perfumy-api.onrender.com/');
   await closeWelcomeModal(page);
   await login(page, credentials.email, credentials.password);
 });
 
 // ===== TEST 3 =====
 test('full flow: cart → checkout → payment', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('https://perfumy-api.onrender.com/');
   await closeWelcomeModal(page);
 
   await login(page, credentials.email, credentials.password);
