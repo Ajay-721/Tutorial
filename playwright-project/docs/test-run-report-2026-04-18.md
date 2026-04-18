@@ -8,20 +8,26 @@
 
 ## Run History
 
-| Run | Time | Result | Duration |
-|-----|------|--------|----------|
-| Run 1 | 2026-04-18 (first run) | 7 Passed · 2 Failed | ~1.6 min |
-| Run 2 | 2026-04-18 (latest) | **9 Passed · 0 Failed** | ~1.1 min |
+| Run | Browser | Mode | Slow-Mo | Result | Duration |
+|-----|---------|------|---------|--------|----------|
+| Run 1 | Chromium · Firefox · WebKit | Headed | Off | 7 Passed · 2 Failed | ~1.6 min |
+| Run 2 | Chromium · Firefox · WebKit | Headed | Off | 9 Passed · 0 Failed | ~1.1 min |
+| Run 3 | Chromium only | Headed | Off | 3 Passed · 0 Failed | ~18.9 sec |
+| Run 4 *(latest)* | Chromium only | Headed | **1000 ms/action** | **3 Passed · 0 Failed** | **~35.4 sec** |
 
 ---
 
-## Latest Run Summary — Run 2 ✅
+## Latest Run Summary — Run 4 ✅
 
-| Test Case | Chromium | Firefox | WebKit |
-|-----------|----------|---------|--------|
-| TC-01 · loads app | ✅ Pass | ✅ Pass | ✅ Pass |
-| TC-02 · login works | ✅ Pass | ✅ Pass | ✅ Pass |
-| TC-03 · full flow: cart → checkout → payment | ✅ Pass | ✅ Pass | ✅ Pass |
+**Config:** Chromium · Headed · Slow-Mo 1000 ms per action
+
+| Test Case | Status | Duration |
+|-----------|--------|----------|
+| TC-01 · loads app | ✅ Pass | — |
+| TC-02 · login works | ✅ Pass | — |
+| TC-03 · full flow: cart → checkout → payment | ✅ Pass | — |
+
+> Slow-mo mode adds a 1-second pause between every browser action — clicks, fills, navigations — making the run visible step-by-step in the browser window. Total run time was ~35 sec vs ~19 sec at normal speed.
 
 ---
 
@@ -32,11 +38,12 @@
 **File:** `tests/example.spec.js:52`  
 **What it checks:** Navigates to the homepage and asserts that "Featured Perfumes" text is visible.
 
-| Browser | Run 1 | Run 2 | Notes |
-|---------|-------|-------|-------|
-| Chromium | ✅ Pass | ✅ Pass | Stable |
-| Firefox | ✅ Pass | ✅ Pass | Stable |
-| WebKit | ✅ Pass | ✅ Pass | Stable |
+| Run | Browser | Status | Notes |
+|-----|---------|--------|-------|
+| Run 1 | Chromium / Firefox / WebKit | ✅ Pass | All stable |
+| Run 2 | Chromium / Firefox / WebKit | ✅ Pass | All stable |
+| Run 3 | Chromium | ✅ Pass | Chromium-only default |
+| Run 4 | Chromium | ✅ Pass | Slow-mo — each step visible |
 
 ---
 
@@ -45,11 +52,12 @@
 **File:** `tests/example.spec.js:58`  
 **What it checks:** Closes the welcome modal, clicks Login, fills email + password, submits, and confirms the Guest label disappears.
 
-| Browser | Run 1 | Run 2 | Notes |
-|---------|-------|-------|-------|
-| Chromium | ✅ Pass | ✅ Pass | Console: "Already logged in" — session cached from prior run |
-| Firefox | ✅ Pass | ✅ Pass | Console: "Already logged in" — session cached from prior run |
-| WebKit | ✅ Pass | ✅ Pass | Stable |
+| Run | Browser | Status | Notes |
+|-----|---------|--------|-------|
+| Run 1 | Chromium / Firefox / WebKit | ✅ Pass | Firefox/Chromium: session already cached |
+| Run 2 | Chromium / Firefox / WebKit | ✅ Pass | Session cached |
+| Run 3 | Chromium | ✅ Pass | Chromium-only default |
+| Run 4 | Chromium | ✅ Pass | Slow-mo — form fill visible at 1s per keystroke batch |
 
 ---
 
@@ -58,11 +66,14 @@
 **File:** `tests/example.spec.js:65`  
 **What it checks:** End-to-end — modal close → login → add to cart → cart page → checkout form → payment page.
 
-| Browser | Run 1 | Run 2 | Notes |
-|---------|-------|-------|-------|
-| Chromium | ❌ Fail | ✅ Pass | Run 1 flake: backdrop timing |
-| Firefox | ❌ Fail | ✅ Pass | Run 1 flake: backdrop timing |
-| WebKit | ✅ Pass | ✅ Pass | Stable across both runs |
+| Run | Browser | Status | Notes |
+|-----|---------|--------|-------|
+| Run 1 | Chromium | ❌ Fail | Backdrop timing flake — blocked `Add to Cart` click |
+| Run 1 | Firefox | ❌ Fail | Same backdrop timing flake |
+| Run 1 | WebKit | ✅ Pass | — |
+| Run 2 | Chromium / Firefox / WebKit | ✅ Pass | Flake did not recur |
+| Run 3 | Chromium | ✅ Pass | Stable |
+| Run 4 | Chromium | ✅ Pass | Slow-mo — each checkout field fill clearly visible |
 
 ---
 
@@ -76,11 +87,9 @@
 subtree intercepts pointer events
 ```
 
-**Cause:** On Run 1, the `#welcome-modal-backdrop` overlay remained in the DOM long enough to block the "Add to Cart" click in Chromium and Firefox after `closeWelcomeModal()` returned. WebKit's pointer-events handling allowed the click through regardless.
+**Cause:** `#welcome-modal-backdrop` remained in the DOM long enough after `closeWelcomeModal()` returned to block the "Add to Cart" click in Chromium and Firefox. Confirmed as a timing flake — did not recur in Runs 2, 3, or 4.
 
-**Resolution:** Run 2 passed without any code changes — confirmed as a **timing flake**, not a code bug. The backdrop settled in time on the second run. The test is considered stable but at risk of occasional flakiness under slow network conditions (hosted on Render cold-start).
-
-**Recommendation:** Monitor across further runs. If TC-03 fails again on the same backdrop issue, apply the `waitFor({ state: 'detached' })` fix documented below.
+**Recommendation:** Monitor further runs. If it recurs, apply the `waitFor({ state: 'detached' })` fix below.
 
 ---
 
@@ -112,5 +121,7 @@ async function closeWelcomeModal(page) {
 | Playwright version | ^1.59.1 |
 | Target URL | https://perfumy-api.onrender.com/ |
 | Test timeout | 60 000 ms |
+| Default browser | Chromium only |
+| Slow-mo (Run 4) | 1000 ms per action |
 | Report date | 2026-04-18 |
 | OS | Windows 11 |

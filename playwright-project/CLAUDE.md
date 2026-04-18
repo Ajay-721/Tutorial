@@ -5,13 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-# Run all tests (all browsers)
-npx playwright test
+# DEFAULT — run tests (Chromium only)
+npx playwright test --project=chromium
 
-# Run tests in a single browser
+# Browser compatibility test (only when user requests it)
 npx playwright test --project=chromium
 npx playwright test --project=firefox
 npx playwright test --project=webkit
+npx playwright test --project=edge
 
 # Run a single test file
 npx playwright test tests/example.spec.js
@@ -45,7 +46,18 @@ node tmp-inspect-login.js
 
 **Timeouts:** Global test timeout is 60 s, expect timeout is 60 s, navigation timeout is 60 s. The hosted app on Render can be slow to cold-start — these generous timeouts account for that.
 
-**Browsers:** Chromium, Firefox, and WebKit run in parallel by default (`fullyParallel: true`). CI enforces single-worker and 2 retries.
+**Browsers:** Always run tests on **Chromium only** by default. Only run multi-browser when the user explicitly asks for a browser compatibility test — in that order: Chrome → Firefox → WebKit → Edge.
+
+```bash
+# Default — always use this unless told otherwise
+npx playwright test --project=chromium
+
+# Browser compatibility test (only when user requests it)
+npx playwright test --project=chromium
+npx playwright test --project=firefox
+npx playwright test --project=webkit
+npx playwright test --project=edge
+```
 
 **Inspection scripts** (`inspect-modal.js`, `tmp-inspect-*.js`) are standalone Node scripts used to probe live DOM during test development — they use the bare `playwright` API (not `@playwright/test`) and are not picked up by the test runner.
 
