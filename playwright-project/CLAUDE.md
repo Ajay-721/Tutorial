@@ -49,6 +49,80 @@ node tmp-inspect-login.js
 
 **Inspection scripts** (`inspect-modal.js`, `tmp-inspect-*.js`) are standalone Node scripts used to probe live DOM during test development — they use the bare `playwright` API (not `@playwright/test`) and are not picked up by the test runner.
 
+## Bug Report Workflow
+
+**Triggers:** `new bug` / `raise bug` / `report bug` / `I found a bug`
+
+Do NOT start working immediately. Run this interview — ask **one question at a time**, wait for the answer before asking the next.
+
+| # | Question | Stored as |
+|---|----------|-----------|
+| 1 | "What is the bug about? Describe it in one sentence." | `BUG_TITLE` |
+| 2 | "What exactly happens that shouldn't happen? Tell me what you see." | `WHAT_HAPPENS` |
+| 3 | "What should happen instead?" | `WHAT_SHOULD_HAPPEN` |
+| 4 | "How can I reproduce this bug? Walk me through the steps." | `HOW_TO_REPRODUCE` |
+| 5 | "Who is affected? 1. All users  2. Users who played more than one day  3. Admin only  4. Specific game category only  5. Not sure" | `AFFECTED_USERS` |
+| 6 | "What is the priority? 1. Critical — app completely broken  2. High — core feature broken  3. Medium — annoying but app works  4. Low — minor issue" | `PRIORITY` |
+
+After all answers are collected, show this summary and wait for confirmation:
+
+```
+Here is your bug report — shall I proceed?
+
+Title: [BUG_TITLE]
+Priority: [PRIORITY]
+What happens: [WHAT_HAPPENS]
+What should happen: [WHAT_SHOULD_HAPPEN]
+Steps to reproduce: [HOW_TO_REPRODUCE]
+Affected users: [AFFECTED_USERS]
+
+Type YES to start the agents or type EDIT to change anything.
+```
+
+Only after the user types **YES**:
+- Auto-assign next ISSUE-ID from `issue-tracker.md`
+- Auto-generate branch name from BUG_TITLE (`fix/short-title-kebab-case`)
+- Run the full 3-agent bug workflow
+
+---
+
+## Feature Request Workflow
+
+**Triggers:** `new feature` / `add feature` / `feature request` / `I want to add`
+
+Do NOT start working immediately. Run this interview — ask **one question at a time**, wait for the answer before asking the next.
+
+| # | Question | Stored as |
+|---|----------|-----------|
+| 1 | "What feature do you want to add? Describe it in one or two sentences." | `FEATURE_TITLE` |
+| 2 | "Who will use this feature? 1. Regular users  2. Admin only  3. Both" | `WHO` |
+| 3 | "Why do we need this feature? What problem does it solve or what value does it add?" | `WHY` |
+| 4 | "What should NOT be included in this feature right now? What are we leaving for later?" | `OUT_OF_SCOPE` |
+| 5 | "What is the priority? 1. High — needed before next launch  2. Medium — important but not urgent  3. Low — nice to have" | `PRIORITY` |
+| 6 | "Do you have any design or UX preference for how this should look or behave? Or type SKIP to let the UX agent decide." | `UX_NOTES` |
+
+After all answers are collected, show this summary and wait for confirmation:
+
+```
+Here is your feature request — shall I proceed?
+
+Title: [FEATURE_TITLE]
+Who: [WHO]
+Why: [WHY]
+Priority: [PRIORITY]
+Out of scope: [OUT_OF_SCOPE]
+UX notes: [UX_NOTES]
+
+Type YES to start the agents or type EDIT to change anything.
+```
+
+Only after the user types **YES**:
+- Auto-assign next FEAT-ID from `feature-tracker.md`
+- Auto-generate branch name from FEATURE_TITLE (`feature/short-title-kebab-case`)
+- Run the full 5-agent feature workflow
+
+---
+
 ## Issue and Feature Numbering
 
 ### 1. AUTO NUMBERING
