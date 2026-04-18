@@ -48,3 +48,44 @@ node tmp-inspect-login.js
 **Browsers:** Chromium, Firefox, and WebKit run in parallel by default (`fullyParallel: true`). CI enforces single-worker and 2 retries.
 
 **Inspection scripts** (`inspect-modal.js`, `tmp-inspect-*.js`) are standalone Node scripts used to probe live DOM during test development — they use the bare `playwright` API (not `@playwright/test`) and are not picked up by the test runner.
+
+## Issue and Feature Numbering
+
+### 1. AUTO NUMBERING
+
+Before creating any new issue or feature document, the agent must:
+
+- Read `docs/issues/issue-tracker.md` and count existing data rows to get the next issue number
+- Read `docs/features/feature-tracker.md` and count existing data rows to get the next feature number
+- Use that number for ISSUE-ID or FEAT-ID
+- Never ask the user for a number
+- Never reuse an existing number
+
+### 2. NUMBER FORMAT
+
+```
+Issues:   ISSUE-001, ISSUE-002, ISSUE-003...
+Features: FEAT-001,  FEAT-002,  FEAT-003...
+```
+
+Always 3 digits with leading zeros.
+
+### 3. BRANCH NAMING
+
+Agent automatically generates the branch name from the title:
+
+```
+Bug:     fix/[short-title-kebab-case]
+Feature: feature/[short-title-kebab-case]
+```
+
+Example: "Math Challenge repeats" → `fix/math-challenge-repeats`
+
+Never ask the user for a branch name.
+
+### 4. TRACKER UPDATE
+
+After every completed issue or feature the agent **must** update the relevant tracker file automatically, adding a new row with all columns filled in:
+
+`docs/issues/issue-tracker.md` — for bugs  
+`docs/features/feature-tracker.md` — for features
